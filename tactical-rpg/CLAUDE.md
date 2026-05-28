@@ -135,6 +135,11 @@ fill background
 | `BASE_CRIT_CHANCE` | 10 | Base crit % for all classes except Mage (Mage = 0) |
 | `CRIT_TRIANGLE_MOD` | 5 | Crit% ±modifier for weapon triangle advantage/disadvantage |
 | `UNIT_RADIUS` | 20 | Base sprite radius in pixels |
+| `UNIT_ANIM_SPEED` | 500.0 | px/s movement glide speed |
+| `HIT_FLASH_DURATION` | 0.28 | Seconds the red hit flash is visible |
+| `AI_HEAL_THRESHOLD` | 0.30 | Enemy heals when HP/max\_HP falls below this |
+| `AI_ATTACK_MARGIN` | 5 | px inside weapon range the AI targets when repositioning |
+| `ITEM_DROP_CHANCE` | 0.30 | Probability each dropped item goes directly to the killer |
 
 ### Font system
 

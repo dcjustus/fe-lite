@@ -5,14 +5,13 @@ All measurements are described in plain language — no pixel values shown.
 import pygame
 import core.constants as C
 from core.constants import (
-    SCREEN_W, SCREEN_H, PANEL_W,
+    SCREEN_W, SCREEN_H, PANEL_W, PANEL_H,
     UI_BG, UI_BORDER, UI_TEXT, UI_TEXT_DIM, UI_HIGHLIGHT,
     ALLY_COLOR, ENEMY_COLOR, WHITE,
     HP_HIGH, HP_MID, HP_LOW,
 )
 from systems.items import MAGIC, BOW
 
-PANEL_H = 330
 PANEL_X = SCREEN_W - PANEL_W - 8
 PANEL_Y = 44
 MAX_ITEMS_SHOWN = 4

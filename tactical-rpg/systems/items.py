@@ -27,23 +27,25 @@ def weapon_triangle_bonus(atk_weapon, def_weapon):
     return 0
 
 def weapon_triangle_hit_mod(atk_weapon, def_weapon):
-    """Return +10, 0, or -10 hit% modifier based on triangle. Magic/Bow neutral."""
+    """Return ±WEAPON_TRIANGLE_HIT_MOD hit% modifier based on triangle. Magic/Bow neutral."""
+    from core.constants import WEAPON_TRIANGLE_HIT_MOD
     if atk_weapon in (BOW, MAGIC) or def_weapon in (BOW, MAGIC):
         return 0
     if TRIANGLE.get(atk_weapon) == def_weapon:
-        return 10
+        return WEAPON_TRIANGLE_HIT_MOD
     if TRIANGLE.get(def_weapon) == atk_weapon:
-        return -10
+        return -WEAPON_TRIANGLE_HIT_MOD
     return 0
 
 def weapon_triangle_crit_mod(atk_weapon, def_weapon):
-    """Return +5, 0, or -5 crit% modifier based on triangle. Magic/Bow neutral."""
+    """Return ±CRIT_TRIANGLE_MOD crit% modifier based on triangle. Magic/Bow neutral."""
+    from core.constants import CRIT_TRIANGLE_MOD
     if atk_weapon in (BOW, MAGIC) or def_weapon in (BOW, MAGIC):
         return 0
     if TRIANGLE.get(atk_weapon) == def_weapon:
-        return 5
+        return CRIT_TRIANGLE_MOD
     if TRIANGLE.get(def_weapon) == atk_weapon:
-        return -5
+        return -CRIT_TRIANGLE_MOD
     return 0
 
 # Attack range definitions: (min_px, max_px)

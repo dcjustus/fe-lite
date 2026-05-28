@@ -7,7 +7,7 @@ import pygame
 import core.constants as C
 from core.constants import (
     SCREEN_W, SCREEN_H, FPS, UI_BG, WHITE, BLACK, DARK_GRAY,
-    ALLY_COLOR, ENEMY_COLOR, MOVE_CIRCLE_COLOR,
+    ALLY_COLOR, ENEMY_COLOR, MOVE_CIRCLE_COLOR, ITEM_DROP_CHANCE,
 )
 from battlefield.battlefield import generate_battlefield
 from systems.combat import resolve_combat
@@ -420,7 +420,7 @@ class Game:
     def _drop_items_from(self, unit, killer=None):
         """Scatter unit's non-depleted items; 30% chance each goes straight to killer."""
         for it in unit.drop_items():
-            if killer is not None and random.random() < 0.30:
+            if killer is not None and random.random() < ITEM_DROP_CHANCE:
                 killer.inventory.append(it)
                 self.hud.push_log(f"  {it.name} claimed by {killer.name}!")
             else:

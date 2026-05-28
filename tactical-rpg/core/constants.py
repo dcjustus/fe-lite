@@ -35,7 +35,7 @@ UI_TEXT       = (230, 230, 230)
 UI_TEXT_DIM   = (140, 140, 160)
 
 PANEL_W = 240
-PANEL_H = 220
+PANEL_H = 330
 
 # --- Unit sizing ---
 UNIT_RADIUS = 20   # base draw radius
@@ -50,6 +50,17 @@ BASE_HIT_RATE           = 90   # base accuracy %
 DOUBLE_ATTACK_THRESHOLD = 1.4  # attacker.speed >= defender.speed * this → double hit
 BASE_CRIT_CHANCE        = 10   # base crit % (all classes except Mage; Mage = 0)
 CRIT_TRIANGLE_MOD       = 5    # crit% ±modifier for weapon triangle advantage/disadvantage
+
+# --- Unit animation ---
+UNIT_ANIM_SPEED    = 500.0   # pixels per second for movement glide
+HIT_FLASH_DURATION = 0.28    # seconds the red hit flash remains visible
+
+# --- AI ---
+AI_HEAL_THRESHOLD   = 0.30   # heal if HP/max_HP falls below this fraction
+AI_ATTACK_MARGIN    = 5      # px inside weapon range the AI targets when repositioning
+
+# --- Loot ---
+ITEM_DROP_CHANCE = 0.30      # probability each dropped item goes directly to the killer
 
 # --- Enemy AI ---
 AI_STEP_DELAY = 0.45        # seconds between each enemy acting

@@ -6,6 +6,7 @@ ai_move()  — Phase 1: heal-or-move only. Returns (log, attack_target_or_None).
 """
 import math
 from systems.movement import clamp_to_radius
+from core.constants import AI_HEAL_THRESHOLD, AI_ATTACK_MARGIN
 
 
 def ai_move(enemy, allies):
@@ -21,8 +22,8 @@ def ai_move(enemy, allies):
     """
     log = []
 
-    # Heal if HP < 30% and has a usable item
-    if enemy.hp / enemy.max_hp < 0.30:
+    # Heal if HP drops below threshold and has a usable item
+    if enemy.hp / enemy.max_hp < AI_HEAL_THRESHOLD:
         items = enemy.usable_items()
         if items:
             msg = items[0].use(enemy)
@@ -63,8 +64,8 @@ def _best_position_for_attack(enemy, target):
     ux, uy = dx / dist, dy / dist
 
     if enemy.weapon == BOW:
-        desired = lo + 5
+        desired = lo + AI_ATTACK_MARGIN
     else:
-        desired = max(lo, hi - 5)
+        desired = max(lo, hi - AI_ATTACK_MARGIN)
 
     return target.x - ux * desired, target.y - uy * desired

@@ -5,6 +5,7 @@ from core.constants import (
     UNIT_RADIUS, ALLY_COLOR, ALLY_DARK, ENEMY_COLOR, ENEMY_DARK,
     EXHAUSTED_TINT, HP_HIGH, HP_MID, HP_LOW, WHITE, BLACK, DARK_GRAY,
     MOVE_CIRCLE_COLOR, ATTACK_RING_COLOR, DEAD_ZONE_COLOR, MOV_SCALE,
+    UNIT_ANIM_SPEED, HIT_FLASH_DURATION,
 )
 from entities.unit_classes import CLASS_DEFS
 from entities.names import get_name
@@ -61,7 +62,7 @@ class Unit:
         # Visual animation state — _draw_x/_draw_y trail behind x/y
         self._draw_x     = float(x)
         self._draw_y     = float(y)
-        self._anim_speed = 500.0   # pixels per second
+        self._anim_speed = UNIT_ANIM_SPEED
 
     # ── Animation ────────────────────────────────────────────────────────────
 
@@ -149,7 +150,7 @@ class Unit:
 
         # Hit flash overlay
         if self.flash_timer > 0:
-            fade = self.flash_timer / 0.28
+            fade = self.flash_timer / HIT_FLASH_DURATION
             size = r + 4
             s = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
             pygame.draw.circle(s, (255, 80, 80, int(160 * fade)), (size, size), size)
@@ -217,7 +218,7 @@ class Unit:
         self.hp = max(0, self.hp - dmg)
         if self.hp == 0:
             self.alive = False
-        self.flash_timer = 0.28
+        self.flash_timer = HIT_FLASH_DURATION
 
     def usable_items(self):
         return [it for it in self.inventory if not it.depleted]
