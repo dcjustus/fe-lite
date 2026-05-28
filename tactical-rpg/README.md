@@ -109,9 +109,20 @@ Base hit rate is **90%**. Bow and Magic are neutral to the triangle.
 
 ---
 
-## Sound Effects
+## Audio
 
-Sound effects play automatically during combat and movement. The game reads MP3 files from `assets/sounds/`:
+All audio is read from `tactical-rpg/assets/sounds/`. Drop real MP3 files in with the names below and they load automatically — no code changes needed. The game falls back silently if any file is missing.
+
+### Music
+
+| File | Plays during |
+|---|---|
+| `menu_music.mp3` | Title screen (loops) |
+| `battle_music.mp3` | Battle (loops) |
+| `victory.mp3` | Victory screen |
+| `defeat.mp3` | Defeat screen |
+
+### Sound Effects
 
 | File | Trigger |
 |---|---|
@@ -120,9 +131,8 @@ Sound effects play automatically during combat and movement. The game reads MP3 
 | `strike.mp3` | Lance / Spear attacks |
 | `arrow.mp3` | Bow attacks |
 | `magic.mp3` | Magic attacks |
-| `movement.mp3` | Unit movement |
-
-To add your own sounds, drop MP3 files into `tactical-rpg/assets/sounds/` using the names above. The game loads them at startup and falls back silently if any file is missing or unreadable (placeholder text files are included in the repository as slots).
+| `movement.mp3` | Unit movement (loops while animating, stops on arrival) |
+| `death.mp3` | Any unit killed in combat |
 
 ---
 

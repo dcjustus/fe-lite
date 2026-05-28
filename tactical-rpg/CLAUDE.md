@@ -347,37 +347,61 @@ Effects tick in `game.update()` and are discarded when `effect.done == True`.
 
 ---
 
-## Sound Effects (`systems/sound.py`)
+## Sound & Music (`systems/sound.py`)
 
-Sound is handled by a single module that wraps `pygame.mixer`. It is initialised once in `main.py` (after `pygame.init()`) and then called from two sites:
+`systems/sound.py` wraps both `pygame.mixer.Sound` (pre-loaded SFX, low latency) and `pygame.mixer.music` (streamed music, one track at a time). Initialised once in `main.py` via `sound.init()` after `pygame.init()`.
 
-- **`systems/effects.py` → `create_combat_effects()`** — plays the weapon sound at the moment effects are spawned (i.e. when combat resolves and visuals begin).
-- **`core/game.py` → `_try_move()`** — plays `movement` when the player commits a move.
+### Call sites
+
+| Site | What it calls |
+|---|---|
+| `systems/effects.py` → `create_combat_effects()` | `sound.play_for_weapon(weapon)` — fires when combat resolves and visuals begin |
+| `core/game.py` → `_try_move()` | `sound.play_movement()` — starts movement loop |
+| `core/game.py` → `update()` (S_MOVING → S_ACTION) | `sound.stop_movement()` — stops loop on arrival |
+| `core/game.py` → `_begin_player_phase()` | `sound.stop_movement()` — safety stop covering the last-enemy edge case |
+| `core/game.py` → `_update_ai()` Phase 2 | `sound.stop_movement()` — stops loop when enemy arrives before attacking |
+| `core/game.py` → all combat resolution paths | `sound.play('death')` — fires if ≥1 unit dies in the exchange |
+| `core/game.py` → `_reset()` | `sound.stop_movement(); sound.play_music('menu_music')` |
+| `core/game.py` → `handle_event()` title→battle | `sound.play_music('battle_music')` |
+| `core/game.py` → `_check_win_loss()` | `sound.stop_music(); sound.play_music('victory'/'defeat', loops=0)` |
 
 ### API
 
 ```python
-sound.init()                  # call once at startup; safe to call if mixer unavailable
-sound.play('slash')           # play by key name; no-ops if key absent or mixer failed
-sound.play_for_weapon(weapon) # convenience wrapper used by effects.py
+sound.init()                    # call once at startup; safe if mixer unavailable
+sound.play('death')             # play SFX by key; no-op if absent or mixer failed
+sound.play_for_weapon(weapon)   # maps weapon constant → SFX key, used by effects.py
+sound.play_movement()           # starts movement SFX looping (loops=-1)
+sound.stop_movement()           # stops the movement loop channel
+sound.play_music('battle_music')        # load + play music track (loops=-1 default)
+sound.play_music('victory', loops=0)    # play once
+sound.stop_music()              # stop current music track
 ```
 
-### Weapon → sound key mapping
+### SFX files (pre-loaded via `pygame.mixer.Sound`)
 
-| Weapon | Sound key | File |
+| Key | File | Trigger |
 |---|---|---|
-| Sword | `slash` | `assets/sounds/slash.mp3` |
-| Axe | `swing` | `assets/sounds/swing.mp3` |
-| Lance | `strike` | `assets/sounds/strike.mp3` |
-| Bow | `arrow` | `assets/sounds/arrow.mp3` |
-| Magic | `magic` | `assets/sounds/magic.mp3` |
-| Movement | `movement` | `assets/sounds/movement.mp3` |
+| `slash` | `slash.mp3` | Sword attacks |
+| `swing` | `swing.mp3` | Axe attacks |
+| `strike` | `strike.mp3` | Lance attacks |
+| `arrow` | `arrow.mp3` | Bow attacks |
+| `magic` | `magic.mp3` | Magic attacks |
+| `movement` | `movement.mp3` | Unit movement (looped, stopped on arrival) |
+| `death` | `death.mp3` | Any unit killed in a combat exchange |
+
+### Music files (streamed via `pygame.mixer.music`)
+
+| Name | File | Loops |
+|---|---|---|
+| `menu_music` | `menu_music.mp3` | Infinite |
+| `battle_music` | `battle_music.mp3` | Infinite |
+| `victory` | `victory.mp3` | Once |
+| `defeat` | `defeat.mp3` | Once |
 
 ### Graceful degradation
 
-`init()` wraps `pygame.mixer.init()` in a try/except. If the mixer fails (e.g. no audio device, browser sandbox), `_ready` stays `False` and every subsequent `play()` call is a no-op. Sound files that are missing or unreadable (including the placeholder text files shipped in the repo) are skipped silently at load time; the remaining sounds still work.
-
-To add real sounds: replace the placeholder files in `assets/sounds/` with valid MP3s of the same name. No code changes required.
+`init()` wraps `pygame.mixer.init()` in a try/except. If the mixer fails (no audio device, browser sandbox), `_ready` stays `False` and every subsequent call is a no-op. SFX files that are missing or unreadable are skipped silently at load time. Music files are checked with `os.path.isfile` before each load; missing files are silently ignored. All placeholder text files in the repo trigger these silent-skip paths until replaced with real MP3s.
 
 ---
 
@@ -483,8 +507,9 @@ No platform-specific code exists; the game runs identically locally and in the b
 - The weapon triangle hit modifier and damage bonus are separate constants  
   (`WEAPON_TRIANGLE_HIT_MOD`, `WEAPON_TRIANGLE_BONUS`) in `core/constants.py`  
   and can be tuned independently without touching game logic.
-- Sound placeholder files in `assets/sounds/` are plain text; `pygame.mixer.Sound`  
-  will fail to load them and the system silently skips them. Replace with real MP3s.
+- All audio files in `assets/sounds/` are plain-text placeholders; both
+  `pygame.mixer.Sound` and `pygame.mixer.music` silently skip them. Replace
+  with real MP3s — no code changes needed.
 
 ---
 
@@ -528,7 +553,10 @@ No platform-specific code exists; the game runs identically locally and in the b
     movement animation finishes via `_ai_pending_attack` in game.py.
 30. **Bug fix**: allies killed by counter-attack during player turn now correctly  
     drop items immediately (previously items were lost until the enemy phase ran).
-31. **Sound effect system**: `systems/sound.py` wraps `pygame.mixer`; six MP3 slots  
-    (slash, swing, strike, arrow, magic, movement) loaded at startup. Combat sounds  
-    fire from `create_combat_effects()`; movement sound fires from `_try_move()`.  
-    Fully graceful — missing files and mixer failures are silenced.
+31. **Sound & music system**: `systems/sound.py` wraps `pygame.mixer.Sound` for SFX
+    (slash, swing, strike, arrow, magic, movement, death) and `pygame.mixer.music`
+    for four streamed tracks (menu_music, battle_music, victory, defeat). Movement
+    sound loops while animating and stops on arrival; death SFX fires on any kill;
+    music transitions on state changes (title↔battle, battle→victory/defeat).
+    Bug fix included: `_begin_player_phase()` always calls `stop_movement()` so the
+    final enemy's movement sound cannot loop past the end of the enemy phase.
