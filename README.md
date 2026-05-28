@@ -17,7 +17,7 @@ python main.py
 
 ```bash
 pip install pygbag
-python -m pygbag --title "FE:Lite" .
+python -m pygbag .
 # then open http://localhost:8000 in Chrome or Firefox
 ```
 
