@@ -62,6 +62,17 @@ AI_ATTACK_MARGIN    = 5      # px inside weapon range the AI targets when reposi
 # --- Loot ---
 ITEM_DROP_CHANCE = 0.30      # probability each dropped item goes directly to the killer
 
+# --- Terrain gameplay ---
+# Trees count as Forest; rocks count as Hills.
+# evasion: % subtracted from attacker's hit chance when defender is in this terrain.
+# move_cost: extra pixels consumed from movement budget when path crosses this terrain.
+# Mages are exempt from move_cost penalties.
+TERRAIN_DEFS = {
+    "tree": {"evasion": 15, "move_cost": 50, "label": "Forest"},
+    "rock": {"evasion": 10, "move_cost": 25, "label": "Hills"},
+}
+MAX_TERRAIN_EVASION = 30     # cap so stacked terrain never makes a unit unhittable
+
 # --- Enemy AI ---
 AI_STEP_DELAY = 0.45        # seconds between each enemy acting
 

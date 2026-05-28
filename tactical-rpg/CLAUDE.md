@@ -140,6 +140,8 @@ fill background
 | `AI_HEAL_THRESHOLD` | 0.30 | Enemy heals when HP/max\_HP falls below this |
 | `AI_ATTACK_MARGIN` | 5 | px inside weapon range the AI targets when repositioning |
 | `ITEM_DROP_CHANCE` | 0.30 | Probability each dropped item goes directly to the killer |
+| `TERRAIN_DEFS` | dict | Per-kind `{evasion, move_cost, label}` for "tree" and "rock" |
+| `MAX_TERRAIN_EVASION` | 30 | Cap on stacked terrain evasion so units remain hittable |
 
 ### Font system
 
@@ -292,6 +294,41 @@ dmg = max(1, attacker.intelligence - defender.resistance)
   - Advantage: +5% (`CRIT_TRIANGLE_MOD`)
   - Disadvantage: −5%
   - Bow and Magic are neutral (no triangle crit modifier).
+
+---
+
+## Terrain System
+
+Terrain pieces (trees = Forest, rocks = Hills) have two gameplay effects: **evasion** and **movement cost**. Both are driven by `TERRAIN_DEFS` in `core/constants.py`.
+
+| Terrain | Kind key | Evasion | Move cost |
+|---|---|---|---|
+| Tree (Forest) | `"tree"` | −15% to attacker hit chance | −50 px from movement budget |
+| Rock (Hills)  | `"rock"` | −10% to attacker hit chance | −25 px from movement budget |
+
+### Evasion
+
+When a unit is attacked, `terrain_evasion_bonus(defender, terrain)` in `systems/movement.py` checks which terrain circles the defender's position overlaps, sums their evasion values, and caps at `MAX_TERRAIN_EVASION` (30%). This bonus is subtracted from the attacker's hit chance in `hit_chance()`. The terrain modifier is shown in the combat log: `(hit: 75% [terrain -15%])` on a miss, or `[terrain -15%]` in the damage note on a hit.
+
+### Live movement cost
+
+When a unit moves, `path_terrain_cost(x1, y1, x2, y2, terrain, weapon)` in `systems/movement.py` checks which terrain circles the straight-line path intersects. Each intersected piece subtracts its `move_cost` from the unit's movement budget (pixel radius). The unit can only travel the remaining budget toward the clicked destination. If the path crosses Forest and Hills simultaneously, both costs stack. The log reports: `"<Name> is slowed by Forest."` A log note is only emitted when the cost is non-zero.
+
+**Mages are exempt** from movement penalties — their `MAGIC` weapon type causes `path_terrain_cost` to return 0 immediately. They still benefit from evasion bonuses when defending.
+
+### Implementation locations
+
+| Concern | Location |
+|---|---|
+| Terrain circle radius (gameplay) | `_terrain_radius(piece)` in `systems/movement.py` |
+| Path-circle intersection | `_segment_crosses_circle()` in `systems/movement.py` |
+| Defender evasion lookup | `terrain_evasion_bonus(unit, terrain)` in `systems/movement.py` |
+| Movement cost on path | `path_terrain_cost(x1,y1,x2,y2,terrain,weapon)` in `systems/movement.py` |
+| Combat integration | `resolve_combat(atk, def, atk_terrain_ev, def_terrain_ev)` in `systems/combat.py` |
+| Player move | `game._try_move()` — computes cost, clamps, logs slow |
+| Player attack | `game._try_attack()` — computes evasion for both units before combat |
+| AI move | `ai_move(enemy, allies, terrain=terrain)` in `systems/ai.py` |
+| AI attack (both paths) | `game._update_ai()` — same evasion computation as player |
 
 ---
 
@@ -541,7 +578,7 @@ No platform-specific code exists; the game runs identically locally and in the b
 ## Known Limitations / Future Work
 
 - Sprite assets are static idle frames only — no walk or attack animation on the map yet.
-- Terrain is purely decorative — no collision, line-of-sight, or terrain bonuses.
+- Terrain affects evasion and movement (see Terrain System section) but has no collision or line-of-sight.
 - Enemy AI is fully greedy with no look-ahead. A priority-scoring system or simple A\*  
   for pathfinding would improve it.
 - No save system; each session is independent.
@@ -607,7 +644,13 @@ No platform-specific code exists; the game runs identically locally and in the b
     pre-bakes ally/enemy/exhausted tinted variants. Units cycle the 3 frames at
     0.25 s each via `_idle_timer`/`_idle_frame` in `update_anim()`. Weapon letter
     badges removed. Primitive shapes remain as fallback.
-35. **Grunt and UI button SFX**: `play_grunt()` added to `systems/sound.py` — randomly
+36. **Terrain gameplay system**: Trees (Forest) and rocks (Hills) now affect evasion
+    and movement. Forest: −15% attacker hit / −50 px movement. Hills: −10% hit / −25 px.
+    Movement cost is applied live — the unit stops short if the path crosses terrain.
+    Mages are exempt from movement penalties. Terrain evasion is shown in the combat
+    log. All values driven by `TERRAIN_DEFS` in `constants.py`. Helpers in
+    `systems/movement.py`; threaded through `combat.py`, `ai.py`, and `game.py`.
+37. **Grunt and UI button SFX**: `play_grunt()` added to `systems/sound.py` — randomly
     plays `grunt 1.mp3` or `grunt 2.mp3` alongside the weapon SFX in
     `create_combat_effects()` (attacker only, defender is silent). `ui button.mp3` plays
     via `sound.play('ui_button')` on every committed menu selection in

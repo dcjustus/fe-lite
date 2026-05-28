@@ -184,6 +184,22 @@ Each class has a unique 3-frame idle animation that cycles continuously on the b
 
 ---
 
+## Terrain
+
+Terrain pieces in the centre of the battlefield aren't just decoration — they affect combat and movement.
+
+| Terrain | Evasion | Movement penalty |
+|---|---|---|
+| **Trees (Forest)** | −15% to attacker's hit chance | −50 px from movement range |
+| **Rocks (Hills)** | −10% to attacker's hit chance | −25 px from movement range |
+
+- **Movement is live**: if your path to the destination crosses terrain, your unit stops short of where you clicked. The log shows *"Name is slowed by Forest."* when this happens.
+- **Evasion** applies when the *defender* is standing inside terrain at the moment they are attacked. The combat log notes *[terrain −15%]* on both hits and misses.
+- **Mages** are exempt from movement penalties (they float over terrain), but still benefit from evasion bonuses when defending.
+- Terrain costs stack if your path crosses multiple pieces, but evasion is capped at 30% so units can't become untouchable.
+
+---
+
 ## Tips
 
 - Mages shred Warriors but die in two hits from almost anything — keep them protected.

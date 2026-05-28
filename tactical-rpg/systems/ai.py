@@ -5,15 +5,18 @@ ai_move()  — Phase 1: heal-or-move only. Returns (log, attack_target_or_None).
              Does NOT resolve combat; caller does that after the animation plays.
 """
 import math
-from systems.movement import clamp_to_radius
+from systems.movement import clamp_to_radius, path_terrain_cost
 from core.constants import AI_HEAL_THRESHOLD, AI_ATTACK_MARGIN
 
 
-def ai_move(enemy, allies):
+def ai_move(enemy, allies, terrain=None):
     """
     Phase 1 of an enemy's turn: heal if low on HP, then move toward the
     nearest ally.  Combat is intentionally NOT resolved here so the caller
     can wait for the movement animation to finish before spawning effects.
+
+    terrain: list of TerrainPiece objects (optional); used to apply live
+             movement cost when crossing Forest/Hills. Mages are exempt.
 
     Returns (list[str], Unit|None):
       - log lines to display
@@ -41,7 +44,14 @@ def ai_move(enemy, allies):
     # Move toward target if not already in attack range
     if not enemy.can_attack(target):
         tx, ty = _best_position_for_attack(enemy, target)
-        nx, ny = clamp_to_radius(enemy.x, enemy.y, tx, ty, enemy.mov_radius)
+
+        # Apply live terrain movement cost (Mages exempt via path_terrain_cost)
+        move_radius = enemy.mov_radius
+        if terrain:
+            cost, _ = path_terrain_cost(enemy.x, enemy.y, tx, ty, terrain, enemy.weapon)
+            move_radius = max(0, move_radius - cost)
+
+        nx, ny = clamp_to_radius(enemy.x, enemy.y, tx, ty, move_radius)
         enemy.x, enemy.y = nx, ny
         log.append(f"[AI] {enemy.name} moves toward {target.name}.")
 

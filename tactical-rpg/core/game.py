@@ -11,7 +11,7 @@ from core.constants import (
 )
 from battlefield.battlefield import generate_battlefield
 from systems.combat import resolve_combat
-from systems.movement import clamp_to_radius, point_in_circle
+from systems.movement import clamp_to_radius, point_in_circle, path_terrain_cost, terrain_evasion_bonus
 from systems.ai import ai_move
 from systems.items import GroundItem
 from systems.effects import create_combat_effects
@@ -108,7 +108,9 @@ class Game:
             self._ai_pending_attack = None
             # Resolve combat at the unit's arrived position
             if target.alive and enemy.can_attack(target):
-                log = resolve_combat(enemy, target)
+                atk_ev = terrain_evasion_bonus(enemy,  self.terrain)
+                def_ev = terrain_evasion_bonus(target, self.terrain)
+                log = resolve_combat(enemy, target, atk_terrain_ev=atk_ev, def_terrain_ev=def_ev)
                 for line in log:
                     self.hud.push_log(line)
                 self.effects.extend(create_combat_effects(enemy, target))
@@ -135,7 +137,7 @@ class Game:
         if not enemy.alive:
             return
 
-        log, attack_target = ai_move(enemy, self.allies)
+        log, attack_target = ai_move(enemy, self.allies, terrain=self.terrain)
         for line in log:
             self.hud.push_log(line)
 
@@ -147,7 +149,9 @@ class Game:
             else:
                 # Already in range, no movement needed — attack right away
                 if attack_target.alive:
-                    log = resolve_combat(enemy, attack_target)
+                    atk_ev = terrain_evasion_bonus(enemy,        self.terrain)
+                    def_ev = terrain_evasion_bonus(attack_target, self.terrain)
+                    log = resolve_combat(enemy, attack_target, atk_terrain_ev=atk_ev, def_terrain_ev=def_ev)
                     for line in log:
                         self.hud.push_log(line)
                     self.effects.extend(create_combat_effects(enemy, attack_target))
@@ -271,11 +275,22 @@ class Game:
         # Save position for potential undo
         self._pre_move_pos = (unit.x, unit.y)
 
+        # Apply live terrain movement cost — path through Forest/Hills costs extra pixels.
+        # Mages float over terrain and are exempt (handled inside path_terrain_cost).
+        terrain_cost, terrain_labels = path_terrain_cost(
+            unit.x, unit.y, mx, my, self.terrain, unit.weapon
+        )
+        effective_radius = max(0, unit.mov_radius - terrain_cost)
+
         # Update logical position (visual position animates to match in update())
-        nx, ny = clamp_to_radius(unit.x, unit.y, mx, my, unit.mov_radius)
+        nx, ny = clamp_to_radius(unit.x, unit.y, mx, my, effective_radius)
         unit.x, unit.y = nx, ny
         unit.moved = True
         sound.play_movement()
+
+        if terrain_labels:
+            label_str = " & ".join(sorted(terrain_labels))
+            self.hud.push_log(f"  {unit.name} is slowed by {label_str}.")
 
         # Check for nearby chests at destination (ground pickup deferred to after anim)
         extra = []
@@ -356,7 +371,9 @@ class Game:
             if point_in_circle(mx, my, enemy.x, enemy.y, 24):
                 if unit.can_attack(enemy):
                     self.effects.extend(create_combat_effects(unit, enemy))
-                    log = resolve_combat(unit, enemy)
+                    atk_ev = terrain_evasion_bonus(unit,  self.terrain)
+                    def_ev = terrain_evasion_bonus(enemy, self.terrain)
+                    log = resolve_combat(unit, enemy, atk_terrain_ev=atk_ev, def_terrain_ev=def_ev)
                     for line in log:
                         self.hud.push_log(line)
                     dead_enemies = [e for e in self.enemies if not e.alive]
