@@ -1,7 +1,7 @@
 """
 Entry point. Pygbag-compatible: uses asyncio + await asyncio.sleep(0) each frame.
 Run locally:  python main.py
-Build web:    python -m pygbag --build tactical-rpg/
+Build web:    python -m pygbag --build .
 """
 import asyncio
 import pygame

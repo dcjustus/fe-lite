@@ -1,4 +1,4 @@
-# Tactical RPG — Fantasy Battle Demo
+# FE:Lite — A Lightweight Tactical RPG
 
 A browser-compatible tactical RPG built with **pygame-ce**, inspired by Fire Emblem. Two sides clash on a randomised battlefield: you command the blue allies, the red enemies are controlled by AI. Defeat every enemy to win.
 
@@ -9,7 +9,6 @@ A browser-compatible tactical RPG built with **pygame-ce**, inspired by Fire Emb
 ### Locally (recommended for development)
 
 ```bash
-cd tactical-rpg
 pip install pygame-ce
 python main.py
 ```
@@ -18,7 +17,7 @@ python main.py
 
 ```bash
 pip install pygbag
-python -m pygbag --build tactical-rpg/
+python -m pygbag --build .
 # then open http://localhost:8000 in Chrome or Firefox
 ```
 
@@ -119,7 +118,7 @@ Base hit rate is **90%**. Bow and Magic are neutral to the triangle.
 
 ## Audio
 
-All audio is read from `tactical-rpg/assets/sounds/`. Drop real MP3 files in with the names below and they load automatically — no code changes needed. The game falls back silently if any file is missing.
+All audio is read from `assets/sounds/`. Drop real MP3 files in with the names below and they load automatically — no code changes needed. The game falls back silently if any file is missing.
 
 ### Music
 

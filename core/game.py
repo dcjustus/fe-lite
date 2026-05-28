@@ -536,8 +536,8 @@ class Game:
         self.surface.fill((10, 12, 20))
         cx = SCREEN_W // 2
 
-        title  = C.FONT_XL.render("TACTICAL RPG", True, (180, 200, 255))
-        sub    = C.FONT_LG.render("A Fantasy Battle", True, (120, 140, 180))
+        title  = C.FONT_XL.render("FE:Lite", True, (180, 200, 255))
+        sub    = C.FONT_LG.render("A Lightweight Tactical RPG", True, (120, 140, 180))
         prompt = C.FONT_MD.render("Press any key or click to begin", True, (90, 110, 150))
         self.surface.blit(title, title.get_rect(centerx=cx, centery=220))
         self.surface.blit(sub,   sub.get_rect(centerx=cx,   centery=278))

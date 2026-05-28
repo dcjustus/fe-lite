@@ -5,7 +5,7 @@ import pygame.freetype as _ft
 SCREEN_W = 1280
 SCREEN_H = 720
 FPS = 60
-TITLE = "Tactical RPG Demo"
+TITLE = "FE:Lite - A Lightweight Tactical RPG"
 
 # --- Colors ---
 BLACK       = (0,   0,   0)

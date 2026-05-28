@@ -1,4 +1,4 @@
-# CLAUDE.md — Tactical RPG Developer Notes
+# CLAUDE.md — FE:Lite Developer Notes
 
 Complete record of design decisions, architecture, and implementation history.
 
@@ -6,7 +6,8 @@ Complete record of design decisions, architecture, and implementation history.
 
 ## Project Overview
 
-A browser-compatible Tactical RPG tech demo written in **Python 3.14 + pygame-ce 2.5.7**.  
+**FE:Lite — A Lightweight Tactical RPG.**  
+A browser-compatible tactical RPG written in **Python 3.14 + pygame-ce 2.5.7**.  
 Target: Fire Emblem-style turn-based combat, but using **free 2D movement** (range circles)  
 instead of a tile grid. Packaged for the browser via **Pygbag** (Python → WebAssembly).
 
@@ -20,7 +21,7 @@ python -m pygbag --build .  # build for browser
 ## File Structure
 
 ```
-tactical-rpg/
+fe-lite/
 ├── main.py                      # async entry point (Pygbag-compatible)
 ├── requirements.txt             # pygame-ce, pygbag
 ├── core/
