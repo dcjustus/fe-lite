@@ -1,9 +1,8 @@
 """
 Entry point. Pygbag-compatible: uses asyncio + await asyncio.sleep(0) each frame.
 Run locally:  python main.py
-Build & serve web:  python -m pygbag --title "FE:Lite" --disable-sound-format-error .
+Build & serve web:  python -m pygbag --title "FE:Lite" .
                     (run from inside the project folder, then open http://localhost:8000)
-                    Note: audio is disabled in the web build (MP3 unsupported by Pygbag).
 """
 import asyncio
 import pygame

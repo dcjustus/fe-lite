@@ -17,11 +17,9 @@ python main.py
 
 ```bash
 pip install pygbag
-python -m pygbag --title "FE:Lite" --disable-sound-format-error .
+python -m pygbag --title "FE:Lite" .
 # then open http://localhost:8000 in Chrome or Firefox
 ```
-
-> **Note:** Audio is disabled in the web build — the Pygbag bundler requires OGG format but the game ships MP3s. The game runs fully otherwise; the sound system degrades silently.
 
 ---
 
@@ -126,22 +124,24 @@ All audio is read from `assets/sounds/`. Drop real MP3 files in with the names b
 
 | File | Plays during |
 |---|---|
-| `menu_music.mp3` | Title screen (loops) |
-| `battle_music.mp3` | Battle (loops) |
-| `victory.mp3` | Victory screen |
-| `defeat.mp3` | Defeat screen |
+| `menu_music.ogg` | Title screen (loops) |
+| `battle_music.ogg` | Battle (loops) |
+| `victory.ogg` | Victory screen |
+| `defeat.ogg` | Defeat screen |
 
 ### Sound Effects
 
 | File | Trigger |
 |---|---|
-| `slash.mp3` | Sword attacks |
-| `swing.mp3` | Axe attacks |
-| `strike.mp3` | Lance / Spear attacks |
-| `arrow.mp3` | Bow attacks |
-| `magic.mp3` | Magic attacks |
-| `movement.mp3` | Unit movement (loops while animating, stops on arrival) |
-| `death.mp3` | Any unit killed in combat |
+| `slash.ogg` | Sword attacks |
+| `swing.ogg` | Axe attacks |
+| `strike.ogg` | Lance / Spear attacks |
+| `arrow.ogg` | Bow attacks |
+| `magic.ogg` | Magic attacks |
+| `movement.ogg` | Unit movement (loops while animating, stops on arrival) |
+| `death.ogg` | Any unit killed in combat |
+| `grunt 1.ogg` / `grunt 2.ogg` | Attacker grunt on each hit (random) |
+| `ui-button.ogg` | Menu selections and screen transitions |
 
 ---
 

@@ -41,18 +41,21 @@ fe-lite/
 │   └── sprites.py               # PNG idle-sprite loader, tinting, 3-frame animation cache
 ├── assets/
 │   ├── sprites/                 # 31×31 PNG idle frames — [class]_idle1/2/3.png (5 classes × 3 = 15 files)
-│   └── sounds/                  # MP3 audio files (replace placeholders with real files)
-│       ├── menu_music.mp3       # title screen background music (loops)
-│       ├── battle_music.mp3     # in-battle background music (loops)
-│       ├── victory.mp3          # victory screen jingle (plays once)
-│       ├── defeat.mp3           # defeat screen jingle (plays once)
-│       ├── slash.mp3            # sword attack SFX
-│       ├── swing.mp3            # axe attack SFX
-│       ├── strike.mp3           # lance attack SFX
-│       ├── arrow.mp3            # bow attack SFX
-│       ├── magic.mp3            # magic attack SFX
-│       ├── movement.mp3         # unit movement SFX (looped, stopped on arrival)
-│       └── death.mp3            # unit death SFX
+│   └── sounds/                  # OGG audio files
+│       ├── menu_music.ogg       # title screen background music (loops)
+│       ├── battle_music.ogg     # in-battle background music (loops)
+│       ├── victory.ogg          # victory screen jingle (plays once)
+│       ├── defeat.ogg           # defeat screen jingle (plays once)
+│       ├── slash.ogg            # sword attack SFX
+│       ├── swing.ogg            # axe attack SFX
+│       ├── strike.ogg           # lance attack SFX
+│       ├── arrow.ogg            # bow attack SFX
+│       ├── magic.ogg            # magic attack SFX
+│       ├── movement.ogg         # unit movement SFX (looped, stopped on arrival)
+│       ├── death.ogg            # unit death SFX
+│       ├── grunt 1.ogg          # attacker grunt SFX (randomly chosen with grunt 2)
+│       ├── grunt 2.ogg          # attacker grunt SFX (randomly chosen with grunt 1)
+│       └── ui-button.ogg        # menu selection / screen transition SFX
 ├── battlefield/
 │   └── battlefield.py           # unit placement, terrain, TreasureChest
 └── ui/
@@ -491,25 +494,25 @@ sound.stop_music()              # stop current music track
 
 | Key | File | Trigger |
 |---|---|---|
-| `slash` | `slash.mp3` | Sword attacks |
-| `swing` | `swing.mp3` | Axe attacks |
-| `strike` | `strike.mp3` | Lance attacks |
-| `arrow` | `arrow.mp3` | Bow attacks |
-| `magic` | `magic.mp3` | Magic attacks |
-| `movement` | `movement.mp3` | Unit movement (looped, stopped on arrival) |
-| `death` | `death.mp3` | Any unit killed in a combat exchange |
-| `grunt_1` | `grunt 1.mp3` | Attacker grunt on combat (randomly chosen with grunt_2) |
-| `grunt_2` | `grunt 2.mp3` | Attacker grunt on combat (randomly chosen with grunt_1) |
-| `ui_button` | `ui button.mp3` | Menu selection (action menu, item menu, screen transitions) |
+| `slash` | `slash.ogg` | Sword attacks |
+| `swing` | `swing.ogg` | Axe attacks |
+| `strike` | `strike.ogg` | Lance attacks |
+| `arrow` | `arrow.ogg` | Bow attacks |
+| `magic` | `magic.ogg` | Magic attacks |
+| `movement` | `movement.ogg` | Unit movement (looped, stopped on arrival) |
+| `death` | `death.ogg` | Any unit killed in a combat exchange |
+| `grunt_1` | `grunt 1.ogg` | Attacker grunt on combat (randomly chosen with grunt_2) |
+| `grunt_2` | `grunt 2.ogg` | Attacker grunt on combat (randomly chosen with grunt_1) |
+| `ui_button` | `ui-button.ogg` | Menu selection (action menu, item menu, screen transitions) |
 
 ### Music files (streamed via `pygame.mixer.music`)
 
 | Name | File | Loops |
 |---|---|---|
-| `menu_music` | `menu_music.mp3` | Infinite |
-| `battle_music` | `battle_music.mp3` | Infinite |
-| `victory` | `victory.mp3` | Once |
-| `defeat` | `defeat.mp3` | Once |
+| `menu_music` | `menu_music.ogg` | Infinite |
+| `battle_music` | `battle_music.ogg` | Infinite |
+| `victory` | `victory.ogg` | Once |
+| `defeat` | `defeat.ogg` | Once |
 
 ### Graceful degradation
 
@@ -689,8 +692,8 @@ No platform-specific code exists; the game runs identically locally and in the b
     log. All values driven by `TERRAIN_DEFS` in `constants.py`. Helpers in
     `systems/movement.py`; threaded through `combat.py`, `ai.py`, and `game.py`.
 37. **Grunt and UI button SFX**: `play_grunt()` added to `systems/sound.py` — randomly
-    plays `grunt 1.mp3` or `grunt 2.mp3` alongside the weapon SFX in
-    `create_combat_effects()` (attacker only, defender is silent). `ui button.mp3` plays
+    plays `grunt 1.ogg` or `grunt 2.ogg` alongside the weapon SFX in
+    `create_combat_effects()` (attacker only, defender is silent). `ui-button.ogg` plays
     via `sound.play('ui_button')` on every committed menu selection in
     `_process_action_choice` / `_process_item_choice`, and on title/victory/defeat
     screen transitions in `handle_event()`.

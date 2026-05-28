@@ -40,16 +40,16 @@ def init():
 
 def _load_all():
     sfx_files = {
-        'slash':     'slash.mp3',
-        'strike':    'strike.mp3',
-        'swing':     'swing.mp3',
-        'magic':     'magic.mp3',
-        'movement':  'movement.mp3',
-        'arrow':     'arrow.mp3',
-        'death':     'death.mp3',
-        'grunt_1':   'grunt 1.mp3',
-        'grunt_2':   'grunt 2.mp3',
-        'ui_button': 'ui button.mp3',
+        'slash':     'slash.ogg',
+        'strike':    'strike.ogg',
+        'swing':     'swing.ogg',
+        'magic':     'magic.ogg',
+        'movement':  'movement.ogg',
+        'arrow':     'arrow.ogg',
+        'death':     'death.ogg',
+        'grunt_1':   'grunt 1.ogg',
+        'grunt_2':   'grunt 2.ogg',
+        'ui_button': 'ui-button.ogg',
     }
     for key, filename in sfx_files.items():
         path = os.path.join(_SOUNDS_DIR, filename)
@@ -118,7 +118,7 @@ def play_music(name: str, loops: int = -1):
     """
     if not _ready:
         return
-    path = os.path.join(_SOUNDS_DIR, f'{name}.mp3')
+    path = os.path.join(_SOUNDS_DIR, f'{name}.ogg')
     if not os.path.isfile(path):
         return
     try:
